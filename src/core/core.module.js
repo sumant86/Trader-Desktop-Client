@@ -9,7 +9,6 @@
         'fw.exception', 'fw.logger', 'fw.router',
 
         // 3rd Party modules
-        'ui.router','ngCookies','ui.bootstrap',
-        'btford.socket-io'
+        'ui.router','ngCookies','ui.bootstrap'
     ]);
 })();
