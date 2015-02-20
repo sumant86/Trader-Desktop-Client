@@ -1,0 +1,28 @@
+<section id="trader-view" class="container-fluid">
+    <div class="row">
+        <div class="Header">
+            <div class="pull-left">Trader Desktop</div>
+            <div class="pull-right">
+                <span class="username" data-ng-model="user">{{vm.user.name}}</span>
+                <button type="button" class="signout btn btn-link" data-ng-click="vm.logout()">Sign Out</button>
+            </div>
+        </div>
+    </div>
+    <div class="row menu">
+        <div class="pull-left">
+            <button class="btn btn-custom" data-ng-click="vm.tradeModel('sm')">Trade</button>
+            <button class="btn btn-custom" data-ng-click="vm.deleteAllTrade()">Delete All</button>
+            <button class="btn btn-custom" data-ng-click="vm.reloadTrades()">Refresh</button>
+        </div>
+        <div class="pull-right">
+            <a class="btn btn-custom-icon" data-ui-sref="trader.table">
+                <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+            </a>
+            <a class="btn btn-custom-icon" data-ui-sref="trader.chart">
+                <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+            </a>
+        </div>
+    </div>
+    <div data-ui-view></div>
+    <div class="row footer"></div>
+</section>

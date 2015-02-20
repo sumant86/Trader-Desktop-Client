@@ -1,0 +1,31 @@
+<div class="row">
+    <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>Creation Time</th>
+            <th>Side</th>
+            <th>Symbol</th>
+            <th>Quantity</th>
+            <th>Placed</th>
+            <th>Executed</th>
+            <th>Limit Price</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Trader</th>
+        </tr>
+        <tr data-ng-repeat="order in vm.order" data-ng-show="vm.order.length">
+            <td class="text-right">{{ order.id }}</td>
+            <td class="text-center">{{ order.creationTime }}</td>
+            <td class="text-center">{{ order.side }}</td>
+            <td class="text-center">{{ order.symbol }}</td>
+            <td class="text-right">{{ order.quantity }}</td>
+            <td class="text-right">{{ order.quantityPlaced }}</td>
+            <td class="text-right">{{ order.quantityExecuted }}</td>
+            <td class="text-right">${{ order.limitPrice }}</td>
+            <td class="text-right">{{ order.priority }}</td>
+            <td class="text-center">{{ order.status }}</td>
+            <td class="text-center">{{ order.traderId }}</td>
+        </tr>
+        <tr data-ng-show="!vm.order.length"><td colspan="11" class="text-center"> No Trade Exist!!! </td></tr>
+    </table>
+</div>
