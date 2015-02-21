@@ -1,4 +1,5 @@
-/* jshint -W024 */
+/* global io */
+
 (function () {
     'use strict';
 
@@ -6,9 +7,9 @@
         .module('app.core')
         .factory('socketService', socketService);
 
-    socketService.$inject = ['$rootScope','api','socketFactory'];
+    socketService.$inject = ['$rootScope', 'api'];
     /* @ngInject */
-    function socketService($rootScope,api,socketFactory) {
+    function socketService($rootScope, api) {
         var socket = io(api);
         var service = {
             socketAction: socketAction,
@@ -18,27 +19,19 @@
         return service;
 
         function socketAction() {
-            return{
+            return {
                 on: function (eventName, callback) {
-                    socket.on(eventName, function () {  
+                    socket.on(eventName, function () {
                         var args = arguments;
-                        $rootScope.$apply(function () {
-                            callback.apply(socket, args);
+                        $rootScope.$apply( function () {
+                            callback.apply( socket, args);
                         });
                     });
                 }
-            }
+            };
         }
-        function socketRemove(){
+        function socketRemove() {
             socket.removeAllListeners();
         }
-        // var myIoSocket = io.connect(api);
-
-        //   var mySocket = socketFactory({
-        //     ioSocket: myIoSocket
-        //   });
-        //   mySocket.forward(['orderCreatedEvent','placementCreatedEvent','executionCreatedEvent','allOrdersDeletedEvent'])
-        //   return mySocket;
-
     }
 })();

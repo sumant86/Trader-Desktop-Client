@@ -6,9 +6,9 @@
         .module('app.core')
         .factory('cookieService', cookieService);
 
-    cookieService.$inject = ['$cookieStore','$cookies','logger'];
+    cookieService.$inject = ['$cookieStore', '$cookies'];
     /* @ngInject */
-    function cookieService($cookieStore,$cookies,logger) {
+    function cookieService($cookieStore, $cookies) {
         var service = {
             set: setCookie,
             get: getCookie,
@@ -17,14 +17,14 @@
 
         return service;
 
-        function setCookie(key,value){
+        function setCookie(key, value) {
             return $cookieStore.put(key, value);
         }
-        function getCookie(key){
+        function getCookie(key) {
             return JSON.parse($cookies[key]);
         }
-        function removeCookie(key){
-            return $cookies[key] = null;
+        function removeCookie(key) {
+            return ($cookies[key] = null);
         }
     }
 })();

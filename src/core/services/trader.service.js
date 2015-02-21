@@ -31,7 +31,7 @@
             }
         }
         function setOrder(postData) {
-            return $http.post(api + '/orders',postData)
+            return $http.post(api + '/orders', postData)
                 .then(setOrderComplete)
                 .catch(function(message) {
                     exception.catcher('XHR Failed for getAccount')(message);
@@ -54,7 +54,7 @@
                 return data.data;
             }
         }
-        function getInstruments(){
+        function getInstruments() {
             return $http.get(api + '/instruments')
                 .then(getInstrumentsComplete)
                 .catch(function(message) {
@@ -64,7 +64,7 @@
 
             function getInstrumentsComplete(data) {
                 return data.data;
-            }   
+            }
         }
     }
 })();

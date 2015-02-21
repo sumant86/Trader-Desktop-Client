@@ -1,3 +1,4 @@
+/* global d3 */
 (function() {
     'use strict';
 
@@ -5,10 +6,12 @@
         .module('app.trader')
         .controller('TraderController', TraderController);
 
-    TraderController.$inject = ['traderService','socketService', 'logger','cookieService','$state','$modal','$log','$scope'];
+    TraderController.$inject = ['traderService', 'socketService', 'logger',
+                                'cookieService', '$state', '$modal',
+                                '$log'];
 
     /* @ngInject */
-    function TraderController(traderService, socketService, logger, cookieService,$state,$modal,$log,$scope) {
+    function TraderController(traderService, socketService, logger, cookieService, $state, $modal, $log) {
         var vm = this;
         vm.order = null;
         vm.user = cookieService.get('user');
@@ -18,7 +21,7 @@
         vm.deleteAllTrade = deleteOrders;
         vm.reloadTrades = reloadTrades;
         activate();
-        if(typeof(vm.user) =='undefined' || vm.user === null){
+        if (typeof(vm.user) === 'undefined' || vm.user === null) {
             return $state.go('login');
         }
         function activate() {
@@ -26,59 +29,45 @@
                 logger.info('Activated Trader View');
             });
         }
-        
         // Socket event Listners Started
         socketService.socketRemove();
-        socketService.socketAction().on('orderCreatedEvent',orderCreated);
-        socketService.socketAction().on('placementCreatedEvent',orderPlaced);
-        socketService.socketAction().on('executionCreatedEvent',orderExecuted);
-        socketService.socketAction().on('allOrdersDeletedEvent',orderdeleted);
+        socketService.socketAction().on('orderCreatedEvent', orderCreated);
+        socketService.socketAction().on('placementCreatedEvent', orderPlaced);
+        socketService.socketAction().on('executionCreatedEvent', orderExecuted);
+        socketService.socketAction().on('allOrdersDeletedEvent', orderdeleted);
 
-        // // socketService.socketRemove();
-        // $scope.$on('socket:orderCreatedEvent',orderCreated);
-        // $scope.$on('socket:placementCreatedEvent',orderPlaced);
-        // $scope.$on('socket:executionCreatedEvent',orderExecuted);
-        // $scope.$on('socket:allOrdersDeletedEvent',orderdeleted);
-
-        function orderCreated(data){
-            console.log(data);
+        function orderCreated(data) {
             vm.order.push(data);
-            // $scope.$apply();
         }
-        function orderPlaced(data){
-            console.log('orderPlaced');
-            vm.order.forEach(function(d,i){
-                if(d.id === data.orderId){
+        function orderPlaced(data) {
+            vm.order.forEach(function(d) {
+                if (d.id === data.orderId) {
                     d.status = data.status;
-                    d.quantityPlaced += data.quantityPlaced; 
+                    d.quantityPlaced += data.quantityPlaced;
                 }
             });
-            // $scope.$apply();
         }
-        function orderExecuted(data){
-            console.log('orderExecuted');
-            vm.order.forEach(function(d,i){
-                if(d.id === data.orderId){
+        function orderExecuted(data) {
+            vm.order.forEach(function(d) {
+                if (d.id === data.orderId) {
                     d.status = data.status;
-                    d.quantityExecuted += data.quantityExecuted; 
+                    d.quantityExecuted += data.quantityExecuted;
                 }
             });
-            // $scope.$apply();
         }
-        function orderdeleted(data){
-            console.log('orderDeleted');
+        function orderdeleted() {
             vm.order = [];
-            // $scope.$apply();
         }
+
         //Socket event Listners end
 
-        function reloadTrades(){
+        function reloadTrades() {
             return getOrder();
         }
-        function deleteOrders(){
+        function deleteOrders() {
             return traderService.deleteOrder().then(function(data) {
                 vm.order = data;
-                d3.select("svg").remove();
+                d3.select('svg').remove();
                 return vm.order;
             });
         }
@@ -88,18 +77,18 @@
                 return vm.order;
             });
         }
-        function logout(){
+        function logout() {
             cookieService.remove('user');
             $state.go('login');
         }
-        function getInstrument(){
+        function getInstrument() {
             return traderService.getInstruments().then(function(data) {
                 vm.instrument = data;
                 return vm.instrument;
-            });   
+            });
         }
-        function createTrade(n){
-            var side = ["Sell", "Buy"];
+        function createTrade(n) {
+            var side = ['Sell', 'Buy'];
             for (var i = 1; i <= n; i++) {
                 var postData = {};
                 postData.traderId = vm.user.id;
@@ -111,7 +100,7 @@
                 traderService.setOrder(postData);
             }
         }
-        function tradeModel(size){
+        function tradeModel(size) {
             getInstrument();
             var modalInstance = $modal.open({
                 templateUrl: 'modal/createTradeModal.html',
