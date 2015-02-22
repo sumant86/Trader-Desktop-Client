@@ -1,3 +1,4 @@
+/* jshint -W024, -W030, -W098, -W117 */
 describe('Modal', function () {
     'use strict';
 

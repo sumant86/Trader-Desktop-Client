@@ -3,7 +3,7 @@
 /* global d3 */
 /* jshint -W126 */
 /* jshint -W101 */
-/*jshint -W065 */
+/* jshint -W065 */
 
 (function () {
     'use strict';
@@ -32,7 +32,6 @@
             scope.$on('$destroy', function() {
                 angular.element($window).off('resize', draw);
             });
-
             function draw(n) {
                 if (!n || typeof(n[0]) === 'undefined') {
                     return;

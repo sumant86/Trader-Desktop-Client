@@ -1,3 +1,4 @@
+/* jshint -W024, -W030, -W098, -W117 */
 describe('Login', function () {
     'use strict';
 
@@ -13,9 +14,9 @@ describe('Login', function () {
     beforeEach(module('app.login'));
 
     beforeEach(function () {
-        loginService = {
-            getUser: jasmine.createSpy()
-        };
+        // loginService = {
+        //     getUser: jasmine.createSpy()
+        // };
 
         module(function ($provide) {
             $provide.value('loginService', loginService);
@@ -56,7 +57,7 @@ describe('Login', function () {
     it('should do its funcionality', function () {
 
         // expect(LoginController.getUser).toHaveBeenCalled();
-        // expect(logger.info).toHaveBeenCalledWith('Activated Login View');
+        expect(logger.info).toHaveBeenCalledWith('Activated Login View');
         // expect(LoginController.user).toEqual({ data : 'user' });
     });
 
