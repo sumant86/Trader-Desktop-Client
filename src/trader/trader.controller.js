@@ -67,7 +67,10 @@
         function deleteOrders() {
             return traderService.deleteOrder().then(function(data) {
                 vm.order = data;
-                d3.select('svg').remove();
+                if (d3.selectAll('g')) {
+                    d3.selectAll('g').remove();    
+                };
+                
                 return vm.order;
             });
         }

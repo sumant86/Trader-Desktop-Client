@@ -17,7 +17,7 @@
             {
                 state: 'trader',
                 config: {
-                    url: '/trader',
+                    url: '',
                     templateUrl: 'trader/trader.html',
                     controller: 'TraderController',
                     controllerAs: 'vm',
