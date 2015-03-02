@@ -6,12 +6,12 @@
         .module('app.trader')
         .controller('TraderController', TraderController);
 
-    TraderController.$inject = ['traderService', 'socketService', 'logger',
+    TraderController.$inject = ['traderService', 'socketService',
                                 'cookieService', '$state', '$modal',
-                                '$log'];
+                                '$log', 'logger'];
 
     /* @ngInject */
-    function TraderController(traderService, socketService, logger, cookieService, $state, $modal, $log) {
+    function TraderController(traderService, socketService, cookieService, $state, $modal, $log, logger) {
         var vm = this;
         vm.order = null;
         vm.user = cookieService.get('user');
@@ -21,10 +21,10 @@
         vm.deleteAllTrade = deleteOrders;
         vm.reloadTrades = reloadTrades;
         activate();
-        if (typeof(vm.user) === 'undefined' || vm.user === null) {
-            return $state.go('login');
-        }
         function activate() {
+            if (typeof(vm.user) === 'undefined' || vm.user === null) {
+                return $state.go('login');
+            }
             return getOrder().then(function() {
                 logger.info('Activated Trader View');
             });
@@ -67,9 +67,9 @@
         function deleteOrders() {
             return traderService.deleteOrder().then(function(data) {
                 vm.order = data;
-                if (d3.selectAll('g')) {
-                    d3.selectAll('g').remove();    
-                };
+                // if (d3.selectAll('svg g')) {
+                //     d3.selectAll('svg g').remove();    
+                // }
                 
                 return vm.order;
             });

@@ -13,9 +13,9 @@ describe('socketService', function() {
         });
 
     });
-    it('should be defined', function () {
-        expect(socketService).toBeDefined();
-    });
+    // it('should be defined', function () {
+    //     expect(socketService.socketAction).toBeDefined();
+    // });
 
 
     

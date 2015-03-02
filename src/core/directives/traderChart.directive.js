@@ -1,9 +1,7 @@
 // Usage
-// <div data-trader-chart class="row" assets="vm.account.assets"></div>
+// <div data-at-barchart assets="vm.account.assets"></div>
 /* global d3 */
 /* jshint -W126 */
-/* jshint -W101 */
-/* jshint -W065 */
 
 (function () {
     'use strict';
@@ -27,163 +25,245 @@
         return directive;
 
         function link(scope, element) {
+            var tableRowHeight = 37; // TODO: take out hard coding
+
+            // initialize the chart
+            var base = d3.select(element[0]).append('svg');
+            var barChart = new BarChart(base);
+            barChart.barHeight(tableRowHeight);
+
+            // Redraw whenever assets change
             scope.$watch('assets', draw, true);
+
+            // Redraw whenever window resizes
+            // TODO: Add a throttle function
             angular.element($window).on('resize', draw);
+
+            // Remove the redraw handler when the scope is destroyed
+            // This prevents redrawing when the view containing the barchart is destroyed
             scope.$on('$destroy', function() {
                 angular.element($window).off('resize', draw);
             });
-            function draw(n) {
-                if (!n || typeof(n[0]) === 'undefined') {
-                    return;
-                }
-                var margin = {t: 20, r: 150, b: 20, l: 70}, height = 550;
-                d3.select(element[0]).select('svg').remove();
-                var svg = d3.select(element[0]).append('svg')
-                        .style('width', '100%')
-                        .attr('height', height)
-                        .attr('transform', 'translate(0,' + (margin.t) + ')');
-                var width = parseInt(d3.select('svg')
-                                        .style('width')
-                                        .replace('px', ''));
-                var w = width - margin.l - margin.r;
-                var h = height - margin.t - margin.b;
-                var yCount = n.length;
 
-                var y = d3.scale.linear().range([h - margin.t - margin.b, 0]);
-                var x = d3.scale.linear().range([0, w - margin.r - margin.l]);
+            function draw() {
+                var assets = scope.assets;
 
-                var color = ['#FF8000', '#FECC88', '#FFF4D2'];
-                var getRanges = function (d) {
-                    var e, p;
-                    e = ((d.quantityExecuted / d.quantity)).toFixed(4);
-                    p = ((d.quantityPlaced / d.quantity)).toFixed(4);
-                    return [[0, e], [e, (p - e).toFixed(4)], [p, 1 - p]];
-                };
-                var line = d3.svg.line()
-                        .x(function (d) {
-                            return d.x;
-                        })
-                        .y(function (d) {
-                            return d.y;
-                        });
-                var xAxis = d3.svg.axis()
-                        .scale(x)
-                        .orient('top')
-                        .tickSubdivide(true)
-                        .tickFormat(d3.format('.0%'))
-                        .ticks(3);
-                var y_domain = [yCount, 0];
-
-                var yAxis = d3.svg.axis()
-                        .scale(y)
-                        .ticks(0)
-                        .tickSubdivide(true)
-                        .orient('left');
-                y.domain(y_domain);
-
-                svg.append('g')
-                        .attr('class', 'x axis')
-                        .attr('transform', 'translate(' + margin.l + ',' + (margin.t) + ')')
-                        .call(xAxis);
-
-                svg.append('g')
-                        .attr('class', 'y axis')
-                        .attr('transform', 'translate(' + margin.l + ',' + (margin.t) + ')')
-                        .call(yAxis);
-
-                // function for the x grid lines
-                function make_x_axis() {
-                    return d3.svg.axis()
-                            .scale(x)
-                            .orient('bottom')
-                            .ticks(10);
-                }
-
-                // function for the y grid lines
-                function make_y_axis() {
-                    return d3.svg.axis()
-                            .scale(y)
-                            .orient('left')
-                            .ticks(0);
-                }
-                // Draw the x Grid lines
-                svg.append('g')
-                        .attr('class', 'grid')
-                        .attr('transform', 'translate(' + margin.l + ',' + (h) + ')')
-                        .call(make_x_axis()
-                                .tickSize(-h, 0, 0)
-                                .tickFormat('')
-                                );
-
-                // Draw the y Grid lines
-                svg.append('g')
-                        .attr('class', 'grid')
-                        .attr('transform', 'translate(' + margin.l + ',' + (h + margin.t) + ')')
-                        .call(make_y_axis()
-                                .tickSize(-w, 0, 0)
-                                .tickFormat('')
-                                );
-                n.forEach(function (td, j) {
-                    svg.append('g')
-                            .append('text')
-                            .text(td.id)
-                            .attr('transform', 'translate(' + (margin.l - 20) + ',' + (y(j) + Math.floor((w / yCount) / 2) + yCount) + ')');
-                    // Put Total quantity on the right of bar
-                    svg.append('g')
-                            .append('text')
-                            .text(td.quantity)
-                            .attr('transform', 'translate(' + (w - margin.r + 10) + ',' + (y(j) + Math.floor((w / yCount) / 2) + yCount) + ')');
-                    // Draw a line below total quantity right to bar
-                    svg.append('g')
-                            .append('path')
-                            .attr('class', 'line')
-                            .attr('d', line([{x: 0, y: 0}, {x: 60, y: 0}]))
-                            .attr('transform', 'translate(' + (w - margin.r) + ',' + (y(j) + Math.floor((w / yCount) / 2) + yCount + 1) + ')');
-                    svg.append('g')
-                            .attr('transform', 'translate(' + margin.l + ',' + (y(j) + margin.t - Math.floor((w / yCount) / 2)) + ')')
-                            .selectAll('rect')
-                            .data(getRanges(td))
-                            .enter()
-                            .append('rect')
-                            .attr('class', 'bar')
-                            .style('fill', function (d, i) {
-                                return color[i];
-                            })
-                            .attr('width', function (d) {
-                                return x(d[1]);
-                            })
-                            .attr('height', Math.floor((w / yCount) / 2))
-                            .attr('transform', function (d) {
-                                return 'translate(' + x(d[0]) + ',' + Math.floor((w / yCount) / 2) + ')';
-                            });
-                });
-                var legends = [ {'title': 'Executed', 'color': '#FF8000'},
-                                {'title': 'Placed', 'color': '#FECC88'},
-                                {'title': 'Total', 'color': '#FFF4D2'}];
-                var legend = svg.selectAll('.legend')
-                        .data(legends.slice().reverse())
-                        .enter().append('g')
-                        .attr('class', 'legend')
-                        .attr('transform', function (d, i) {
-//                            return "translate(" + (-margin.l - margin.r - i * 100) + ",0)"; // Horizontal
-                            return 'translate(' + (-margin.l - margin.r) + ',' + i * 20 + ')';// Vertical
-                        });
-                legend.append('rect')
-                        .attr('x', width)
-                        .attr('width', 18)
-                        .attr('height', 18)
-                        .style('fill', function (d) {
-                            return d.color;
-                        });
-                legend.append('text')
-                        .attr('x', width + 20)
-                        .attr('y', 9)
-                        .attr('dy', '.35em')
-                        .style('text-anchor', 'start')
-                        .text(function (d) {
-                            return d.title;
-                        });
+                // This can happen when the server has not yet returned the assets
+                if (!assets) { return; }
+                
+                barChart
+                    .width(element.width())
+                    .draw(assets);
             }
         }
     }
+
+    /* ----- BarChart -----*/
+    function BarChart(base) {
+        this.base = base;
+
+        this.margin = {top: 20, right: 200, bottom: 10, left: 50};
+        this.axisMargin = 5;
+
+        this.x = d3.scale.linear();
+
+        this.y = d3.scale.ordinal();
+        
+        this.xAxis = d3.svg.axis()
+            .scale(this.x)
+            .orient('top')
+            .tickFormat(d3.format('.0%'))
+            .ticks(3);
+
+        // chart base
+        this.base
+            .attr('class', 'chart');
+
+        // x-axis base
+        this.xAxisBase = this.base.append('g')
+            .attr('class', 'x axis');
+
+        // plot base
+        this.plotBase = this.base.append('g')
+            .attr('class', 'plot')
+            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+
+    }
+
+    BarChart.prototype.width = function(newWidth) {
+        this.w = newWidth;
+        this.plotWidth = this.w - this.margin.left - this.margin.right;
+        this.base.attr('width', this.w);
+        this.x.range([0, this.plotWidth]);
+        return this;
+    };
+
+    BarChart.prototype.barHeight = function(newBarHeight) {
+        this.bh = newBarHeight;
+        return this;
+    };
+
+    BarChart.prototype.draw = function(data) {
+        // console.log(data);
+        // Compute y-dimensions based on bar height
+        this.plotHeight = this.bh * data.length;
+        this.h = this.plotHeight + this.margin.top + this.margin.bottom;
+        this.base.attr('height', this.h);
+        this.y.rangeBands([0, this.plotHeight], 0.05, 0);
+        this.xAxisBase.attr(
+            'transform',
+            'translate(' + this.margin.left + ',' + (this.margin.top + this.axisMargin) + ')'
+        );
+
+        // Set the domains for the scales from the supplied data
+        this.x.domain([0, 1]);
+        this.y.domain(data.map(function(d) { return d.id; }));
+
+        // Draw the axes
+        // this.xAxis.tickValues(this.x.domain());
+        this.xAxisBase.call(this.xAxis);
+
+        // Create the 'update selection' by selecting the bars and joining with data.
+        // Update selection contains the DOM elements that were successfully bound to data
+        // plus references to enter and exit selections.
+        var updateSelection = this.plotBase.selectAll('.bar')
+            .data(data, function(d) { 
+                return d.id; 
+            });
+
+        // Remove the exiting bars (this is the 'exit selection')
+        updateSelection.exit()
+            .remove();
+
+        // Get the 'enter selection'
+        // Contains placeholder DOM nodes for each data element that was not bound
+        var enterSelection = updateSelection.enter();
+
+
+        //legends Start
+        this.legends = [ {'title': 'Executed', 'color': '#FF8000'},
+                                {'title': 'Placed', 'color': '#FECC88'},
+                                {'title': 'Total', 'color': '#FFF4D2'}];
+        this.legend = this.base.selectAll('legend')
+            .data(this.legends.slice().reverse())
+            .enter().append('g')
+            .attr('class', 'legend')
+            .attr('transform', 'translate(' + (this.margin.right - this.margin.left) + ',5)');
+
+        this.legend.append('rect')
+            .attr('x', this.plotWidth)
+            .attr('width', 18)
+            .attr('height', 18)
+            .attr('y',function(d,i){
+                return i * 20;
+            })
+            .style('fill', function (d) {
+                return d.color;
+            });
+        this.legend.append('text')
+            .attr('x', this.plotWidth + 20)
+            .attr('y',function(d,i){
+                return i * 20 + 9;
+            })
+            .attr('dy', '.35em')
+            .style('text-anchor', 'start')
+            .text(function (d) {
+                return d.title;
+            });
+        //Legends End
+        var textEnter = enterSelection
+            .append('g')
+            .attr('class', 'id');
+
+        
+        // Add a group for each entering element - these are the entering bars
+        var barsEnter = enterSelection
+            .append('g')
+            .attr('class', 'total');
+        
+        // Add the rectangle for the bar
+        barsEnter
+            .append('rect')
+            .attr('x', 0)
+            // .attr('width', this.plotWidth)
+            .attr('height', this.y.rangeBand());
+
+        // Draw the bars
+        var self = this;
+        textEnter
+            .append('text')
+            .attr('x', -3)
+            .attr('y', function(d) { return (self.y(d.id) + self.y.rangeBand() / 3); })
+            .attr('dy', '1em')
+            .style('text-anchor', 'end')
+            .text(function (d) {
+                return d.id;
+            });
+        textEnter
+            .append('text')
+            .attr('x', this.x(1) + 3)
+            .attr('y', function(d) { return (self.y(d.id) + self.y.rangeBand() / 3); })
+            .attr('dy', '1em')
+            .style('text-anchor', 'start')
+            .text(function (d) {
+                return d.quantity;
+            });
+        textEnter
+            .append('rect')
+            .attr('class', 'total')
+            .attr('x', this.x(1))
+            .attr('y', function(d) { return (self.y(d.id) + self.y.rangeBand() - 2); })
+            .attr('height',2)
+            .attr('width',50);
+
+        updateSelection.select('rect')
+            .attr('x', 0)
+            .attr('y', function(d) { return self.y(d.id); })
+            .attr('height', this.y.rangeBand())
+            // .transition()
+            // .duration(1000)
+            .attr('width', function(d) { return self.x(d.quantity/d.quantity); });
+
+        var barsEnter = enterSelection
+            .append('g')
+            .attr('class', 'placed');
+
+        // Add the rectangle for the bar
+        barsEnter
+            .append('rect')
+            .attr('x', 0)
+            // .attr('width', this.plotWidth)
+            .attr('height', this.y.rangeBand());
+
+        // Draw the bars
+        var self = this;
+        updateSelection.select('rect')
+            .attr('x', 0)
+            .attr('y', function(d) { return self.y(d.id); })
+            .attr('height', this.y.rangeBand())
+            // .transition()
+            // .duration(1000)
+            .attr('width', function(d) { return self.x(d.quantityPlaced/d.quantity); });
+
+        var barsEnter = enterSelection
+            .append('g')
+            .attr('class', 'executed');
+
+        // Add the rectangle for the bar
+        barsEnter
+            .append('rect')
+            .attr('x', 0)
+            // .attr('width', this.plotWidth)
+            .attr('height', this.y.rangeBand());
+
+        // Draw the bars
+        var self = this;
+        updateSelection.select('rect')
+            .attr('x', 0)
+            .attr('y', function(d) { return self.y(d.id); })
+            .attr('height', this.y.rangeBand())
+            // .transition()
+            // .duration(1000)
+            .attr('width', function(d) { return self.x(d.quantityExecuted/d.quantity); });
+    };
 })();

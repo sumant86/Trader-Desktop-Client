@@ -14,17 +14,17 @@
             <th class="hidden-xs hidden-sm">Trader</th>
         </tr>
         <tr data-ng-repeat="order in vm.order" data-ng-show="vm.order.length">
-            <td class="text-right" ng-bind="order.id"></td>
-            <td class="text-center hidden-xs" ng-bind="order.creationTime | timeFilter"></td>
-            <td class="text-center" ng-bind="order.side"></td>
-            <td class="text-center" ng-bind="order.symbol"></td>
-            <td class="text-right" ng-bind="order.quantity"></td>
-            <td class="text-right hidden-xs" ng-bind="order.quantityPlaced"></td>
-            <td class="text-right hidden-xs" ng-bind="order.quantityExecuted"></td>
-            <td class="text-right" ng-bind="'$' + order.limitPrice"></td>
-            <td class="text-right hidden-xs" ng-bind="order.priority"></td>
-            <td class="text-center hidden-xs" ng-bind="order.status"></td>
-            <td class="text-center hidden-xs hidden-sm" ng-bind="order.traderId"></td>
+            <td class="text-right" data-ng-bind="order.id"></td>
+            <td class="text-center hidden-xs" data-ng-bind="order.creationTime | timeFilter"></td>
+            <td class="text-center" data-ng-bind="order.side"></td>
+            <td class="text-center" data-ng-bind="order.symbol"></td>
+            <td class="text-right" data-ng-bind="order.quantity"></td>
+            <td class="text-right hidden-xs" data-ng-bind="order.quantityPlaced"></td>
+            <td class="text-right hidden-xs" data-ng-bind="order.quantityExecuted"></td>
+            <td class="text-right" data-ng-bind="'$' + order.limitPrice"></td>
+            <td class="text-right hidden-xs" data-ng-bind="order.priority"></td>
+            <td class="text-center hidden-xs" data-ng-bind="order.status"></td>
+            <td class="text-center hidden-xs hidden-sm" data-ng-bind="order.traderId"></td>
         </tr>
         <tr data-ng-show="!vm.order.length"><td colspan="11" class="text-center"> No Trade Exist!!! </td></tr>
     </table>
