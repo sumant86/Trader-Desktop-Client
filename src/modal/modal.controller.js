@@ -12,8 +12,8 @@
     function ModalController($modalInstance, $modal, logger) {
         var vm = this;
 
-        vm.create = create;
         vm.cancel = cancel;
+        vm.onSubmit = create;
         activate();
         function activate() {
             logger.info('Activated Trader Modal');
@@ -21,12 +21,9 @@
         function cancel() {
             $modalInstance.dismiss('cancel');
         }
-        function create() {
+        function create(){
             if (vm.tradeCount) {
                 $modalInstance.close(vm.tradeCount);
-            }
-            else {
-                alert('enter a valid +ve number');
             }
         }
     }

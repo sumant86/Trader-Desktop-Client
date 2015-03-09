@@ -1,5 +1,5 @@
 <div class="row">
-    <table class="table">
+    <table class="table table-bordered table-hover" data-ng-show="vm.order.length">
         <tr>
             <th>Id</th>
             <th class="hidden-xs">Creation Time</th>
@@ -13,19 +13,19 @@
             <th class="hidden-xs">Status</th>
             <th class="hidden-xs hidden-sm">Trader</th>
         </tr>
-        <tr data-ng-repeat="order in vm.order" data-ng-show="vm.order.length">
+        <tr data-ng-repeat="order in vm.order">
             <td class="text-right" data-ng-bind="order.id"></td>
             <td class="text-center hidden-xs" data-ng-bind="order.creationTime | timeFilter"></td>
-            <td class="text-center" data-ng-bind="order.side"></td>
+            <td class="text-center" data-ng-bind="order.side" data-ng-class="order.side=='Buy' ? 'text-danger' : 'text-success'"></td>
             <td class="text-center" data-ng-bind="order.symbol"></td>
             <td class="text-right" data-ng-bind="order.quantity"></td>
             <td class="text-right hidden-xs" data-ng-bind="order.quantityPlaced"></td>
             <td class="text-right hidden-xs" data-ng-bind="order.quantityExecuted"></td>
             <td class="text-right" data-ng-bind="'$' + order.limitPrice"></td>
             <td class="text-right hidden-xs" data-ng-bind="order.priority"></td>
-            <td class="text-center hidden-xs" data-ng-bind="order.status"></td>
-            <td class="text-center hidden-xs hidden-sm" data-ng-bind="order.traderId"></td>
-        </tr>
-        <tr data-ng-show="!vm.order.length"><td colspan="11" class="text-center"> No Trade Exist!!! </td></tr>
+            <td class="text-center hidden-xs" data-ng-bind="order.status" data-ng-class="order.status=='Executed' ? 'text-success' : 'text-info'"></td>
+            <td class="text-center hidden-xs hidden-sm"><span data-ng-bind="order.traderId" class="label label-info"></span></td>
+        </tr>       
     </table>
+    <div data-ng-show="!vm.order.length" class="text-center"> No Trade Exist!!!  </div>
 </div>

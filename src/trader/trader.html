@@ -4,22 +4,32 @@
             <div class="pull-left">Trader Desktop</div>
             <div class="pull-right">
                 <span class="username" data-ng-model="user">{{vm.user.name}}</span>
-                <button type="button" class="signout btn btn-link" data-ng-click="vm.logout()">Sign Out</button>
+                <button type="button" class="signout btn btn-link" data-ng-click="vm.logout()">
+                    Sign Out <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                </button>
             </div>
         </div>
     </div>
     <div class="row menu">
         <div class="pull-left">
-            <button class="btn btn-custom" data-ng-click="vm.tradeModel('sm')">Trade</button>
-            <button class="btn btn-custom" data-ng-click="vm.deleteAllTrade()">Delete All</button>
-            <button class="btn btn-custom" data-ng-click="vm.reloadTrades()">Refresh</button>
+            <button class="btn btn-primary" data-ng-click="vm.tradeModel('sm')">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Trade 
+            </button>
+            
+            <button class="btn btn-info" data-ng-click="vm.reloadTrades()">
+                <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh 
+            </button>
+            
+            <button class="btn btn-danger" data-ng-click="vm.deleteAllTrade()">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete All 
+            </button>
         </div>
         <div class="pull-right">
-            <a class="btn btn-custom-icon" data-ui-sref="trader.table">
-                <span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+            <a class="btn btn-default" data-ui-sref="trader.table">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
             </a>
-            <a class="btn btn-custom-icon" data-ui-sref="trader.chart">
-                <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+            <a class="btn btn-default" data-ui-sref="trader.chart">
+                <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
             </a>
         </div>
     </div>

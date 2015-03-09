@@ -5,10 +5,10 @@
         .module('app.login')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['loginService', 'logger', 'cookieService', '$state'];
+    LoginController.$inject = ['loginService', 'cookieService', '$state', 'logger'];
 
     /* @ngInject */
-    function LoginController(loginService, logger, cookieService, $state) {
+    function LoginController(loginService, cookieService, $state, logger) {
         var vm = this;
 
         vm.users = null;

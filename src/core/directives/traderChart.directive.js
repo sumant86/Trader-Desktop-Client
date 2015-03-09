@@ -62,7 +62,7 @@
     function BarChart(base) {
         this.base = base;
 
-        this.margin = {top: 20, right: 200, bottom: 10, left: 50};
+        this.margin = {top: 50, right: 200, bottom: 10, left: 50};
         this.axisMargin = 5;
 
         this.x = d3.scale.linear();
@@ -72,8 +72,8 @@
         this.xAxis = d3.svg.axis()
             .scale(this.x)
             .orient('top')
-            .tickFormat(d3.format('.0%'))
-            .ticks(3);
+            .ticks(3)
+            .tickFormat(d3.format('.0%'));
 
         // chart base
         this.base
@@ -88,6 +88,40 @@
             .attr('class', 'plot')
             .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
 
+        //Lagend
+        this.legends = [    {'title': 'Total', 'color': '#FFF4D2'},
+                            {'title': 'Placed', 'color': '#FECC88'},
+                            {'title': 'Executed', 'color': '#FF8000'}
+                                ];
+        this.legendbase = this.base.append('g')
+            .attr('class', 'legend')
+            .attr('transform', 'translate(' + (this.margin.right -this.margin.left) + ','+ this.margin.top+')');
+
+        this.legentEnter = this.legendbase
+            .selectAll('g.legend')
+            .data(this.legends.slice())
+            .enter();
+
+        this.legentEnter.append('rect')
+            .attr('x', 0)
+            .attr('width', 18)
+            .attr('height', 18)
+            .attr('y',function(d,i){
+                return i * 20;
+            })
+            .style('fill', function (d) {
+                return d.color;
+            });
+        this.legentEnter.append('text')
+            .attr('x', 20)
+            .attr('y',function(d,i){
+                return i * 20 + 9;
+            })
+            .attr('dy', '.35em')
+            .style('text-anchor', 'start')
+            .text(function (d) {
+                return d.title;
+            });
     }
 
     BarChart.prototype.width = function(newWidth) {
@@ -102,9 +136,8 @@
         this.bh = newBarHeight;
         return this;
     };
-
+    
     BarChart.prototype.draw = function(data) {
-        // console.log(data);
         // Compute y-dimensions based on bar height
         this.plotHeight = this.bh * data.length;
         this.h = this.plotHeight + this.margin.top + this.margin.bottom;
@@ -116,20 +149,20 @@
         );
 
         // Set the domains for the scales from the supplied data
-        this.x.domain([0, 1]);
+        // this.x.domain([0, d3.max(data.map(function(d) { return d.; }))]);
         this.y.domain(data.map(function(d) { return d.id; }));
 
         // Draw the axes
         // this.xAxis.tickValues(this.x.domain());
         this.xAxisBase.call(this.xAxis);
 
+        
+
         // Create the 'update selection' by selecting the bars and joining with data.
         // Update selection contains the DOM elements that were successfully bound to data
         // plus references to enter and exit selections.
         var updateSelection = this.plotBase.selectAll('.bar')
-            .data(data, function(d) { 
-                return d.id; 
-            });
+            .data(data, function(d) { return d.id; });
 
         // Remove the exiting bars (this is the 'exit selection')
         updateSelection.exit()
@@ -139,59 +172,62 @@
         // Contains placeholder DOM nodes for each data element that was not bound
         var enterSelection = updateSelection.enter();
 
-
-        //legends Start
-        this.legends = [ {'title': 'Executed', 'color': '#FF8000'},
-                                {'title': 'Placed', 'color': '#FECC88'},
-                                {'title': 'Total', 'color': '#FFF4D2'}];
-        this.legend = this.base.selectAll('legend')
-            .data(this.legends.slice().reverse())
-            .enter().append('g')
-            .attr('class', 'legend')
-            .attr('transform', 'translate(' + (this.margin.right - this.margin.left) + ',5)');
-
-        this.legend.append('rect')
-            .attr('x', this.plotWidth)
-            .attr('width', 18)
-            .attr('height', 18)
-            .attr('y',function(d,i){
-                return i * 20;
-            })
-            .style('fill', function (d) {
-                return d.color;
-            });
-        this.legend.append('text')
-            .attr('x', this.plotWidth + 20)
-            .attr('y',function(d,i){
-                return i * 20 + 9;
-            })
-            .attr('dy', '.35em')
-            .style('text-anchor', 'start')
-            .text(function (d) {
-                return d.title;
-            });
-        //Legends End
-        var textEnter = enterSelection
-            .append('g')
-            .attr('class', 'id');
-
-        
         // Add a group for each entering element - these are the entering bars
         var barsEnter = enterSelection
             .append('g')
-            .attr('class', 'total');
-        
+            .attr('class', 'bar');
+
         // Add the rectangle for the bar
+
         barsEnter
             .append('rect')
             .attr('x', 0)
-            // .attr('width', this.plotWidth)
+            .attr('width', 0)
+            .attr('class', 'total')
+            .attr('height', this.y.rangeBand());
+
+        barsEnter
+            .append('rect')
+            .attr('x', 0)
+            .attr('width', 0)
+            .attr('class', 'placed')
+            .attr('height', this.y.rangeBand());
+
+        barsEnter
+            .append('rect')
+            .attr('x', 0)
+            .attr('width', 0)
+            .attr('class', 'executed')
             .attr('height', this.y.rangeBand());
 
         // Draw the bars
         var self = this;
-        textEnter
+        updateSelection.select('rect.total')
+            .attr('x', 0)
+            .attr('y', function(d) { return self.y(d.id); })
+            .attr('height', this.y.rangeBand())
+            .transition()
+            .duration(1000)
+            .attr('width', function(d) { return self.x(d.quantity/d.quantity); });
+        updateSelection.select('rect.placed')
+            .attr('x', 0)
+            .attr('y', function(d) { return self.y(d.id); })
+            .attr('height', this.y.rangeBand())
+            .transition()
+            .duration(1000)
+            .attr('width', function(d) { return self.x(d.quantityPlaced/d.quantity); });
+
+        updateSelection.select('rect.executed')
+            .attr('x', 0)
+            .attr('y', function(d) { return self.y(d.id); })
+            .attr('height', this.y.rangeBand())
+            .transition()
+            .duration(1000)
+            .attr('width', function(d) { return self.x(d.quantityExecuted/d.quantity); });
+
+        barsEnter
             .append('text')
+            .attr('class', 'id')
             .attr('x', -3)
             .attr('y', function(d) { return (self.y(d.id) + self.y.rangeBand() / 3); })
             .attr('dy', '1em')
@@ -199,8 +235,9 @@
             .text(function (d) {
                 return d.id;
             });
-        textEnter
+        barsEnter
             .append('text')
+            .attr('class', 'quantity')
             .attr('x', this.x(1) + 3)
             .attr('y', function(d) { return (self.y(d.id) + self.y.rangeBand() / 3); })
             .attr('dy', '1em')
@@ -208,62 +245,50 @@
             .text(function (d) {
                 return d.quantity;
             });
-        textEnter
+        barsEnter
             .append('rect')
-            .attr('class', 'total')
+            .attr('class', 'quantitybar total')
             .attr('x', this.x(1))
             .attr('y', function(d) { return (self.y(d.id) + self.y.rangeBand() - 2); })
             .attr('height',2)
             .attr('width',50);
+        updateSelection.select('text.quantity')
+            .attr('x', this.x(1) + 3)
+            .attr('y', function(d) { return (self.y(d.id) + self.y.rangeBand() / 3); });
+        updateSelection.select('rect.quantitybar.total')
+            .attr('x', this.x(1))
+            .attr('y', function(d) { return (self.y(d.id) + self.y.rangeBand() - 2); });
 
-        updateSelection.select('rect')
-            .attr('x', 0)
-            .attr('y', function(d) { return self.y(d.id); })
-            .attr('height', this.y.rangeBand())
-            // .transition()
-            // .duration(1000)
-            .attr('width', function(d) { return self.x(d.quantity/d.quantity); });
+        //Legends
+        if(this.plotWidth < 515){
+            this.legendbase.attr('transform', 'translate(' + (this.margin.right -this.margin.left) + ',5)');
+            this.legendbase.selectAll('g.legend rect')   
+                .attr('x', function(d,i){
+                    return i * 90 + 9;
+                })
+                .attr('y', 0);
+            this.legendbase.selectAll('g.legend text')   
+                .attr('x', function(d,i){
+                    return i * 90 + 9;
+                })
+                .attr('y', 9)
+                .style('text-anchor', 'end');
+        }
+        else{
+            this.legendbase.attr('transform', 'translate(' + (this.margin.right -this.margin.left) + ','+ this.margin.top+')');
+            this.legendbase.selectAll('g.legend rect')   
+                .attr('x', this.x(1))
+                .attr('y',function(d,i){
+                    return i * 20;
+                });
+            this.legendbase.selectAll('g.legend text')   
+                .attr('x', this.x(1) + 20)
+                .attr('y',function(d,i){
+                    return i * 20 + 9;
+                })
+                .style('text-anchor', 'start');
+        }
 
-        var barsEnter = enterSelection
-            .append('g')
-            .attr('class', 'placed');
-
-        // Add the rectangle for the bar
-        barsEnter
-            .append('rect')
-            .attr('x', 0)
-            // .attr('width', this.plotWidth)
-            .attr('height', this.y.rangeBand());
-
-        // Draw the bars
-        var self = this;
-        updateSelection.select('rect')
-            .attr('x', 0)
-            .attr('y', function(d) { return self.y(d.id); })
-            .attr('height', this.y.rangeBand())
-            // .transition()
-            // .duration(1000)
-            .attr('width', function(d) { return self.x(d.quantityPlaced/d.quantity); });
-
-        var barsEnter = enterSelection
-            .append('g')
-            .attr('class', 'executed');
-
-        // Add the rectangle for the bar
-        barsEnter
-            .append('rect')
-            .attr('x', 0)
-            // .attr('width', this.plotWidth)
-            .attr('height', this.y.rangeBand());
-
-        // Draw the bars
-        var self = this;
-        updateSelection.select('rect')
-            .attr('x', 0)
-            .attr('y', function(d) { return self.y(d.id); })
-            .attr('height', this.y.rangeBand())
-            // .transition()
-            // .duration(1000)
-            .attr('width', function(d) { return self.x(d.quantityExecuted/d.quantity); });
+        
     };
 })();
