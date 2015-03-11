@@ -1,4 +1,3 @@
-/* global d3 */
 (function() {
     'use strict';
 
@@ -6,15 +5,15 @@
         .module('app.trader')
         .controller('TraderController', TraderController);
 
-    TraderController.$inject = ['traderService', 'socketService',
-                                'cookieService', '$state', '$modal',
-                                '$log', 'logger'];
+    TraderController.$inject = ['crudService', 'socketService',
+                                'authService', '$state', '$modal',
+                                '$log'];
 
     /* @ngInject */
-    function TraderController(traderService, socketService, cookieService, $state, $modal, $log, logger) {
+    function TraderController(crudService, socketService, authService, $state, $modal, $log) {
         var vm = this;
         vm.order = null;
-        vm.user = cookieService.get('user');
+        vm.user = authService.getAuth('user');
         vm.instrument = getInstrument;
         vm.logout = logout;
         vm.tradeModel = tradeModel;
@@ -25,9 +24,7 @@
             if (typeof(vm.user) === 'undefined' || vm.user === null) {
                 return $state.go('login');
             }
-            return getOrder().then(function() {
-                logger.info('Activated Trader View');
-            });
+            getOrder();
         }
         // Socket event Listners Started
         socketService.socketRemove();
@@ -62,33 +59,20 @@
         //Socket event Listners end
 
         function reloadTrades() {
-            return getOrder();
+            getOrder();
         }
         function deleteOrders() {
-            return traderService.deleteOrder().then(function(data) {
-                vm.order = data;
-                // if (d3.selectAll('svg g')) {
-                //     d3.selectAll('svg g').remove();    
-                // }
-                
-                return vm.order;
-            });
+                vm.order = crudService.deleteOrder();
         }
         function getOrder() {
-            return traderService.getOrder().then(function(data) {
-                vm.order = data;
-                return vm.order;
-            });
+                vm.order = crudService.orders();
         }
         function logout() {
-            cookieService.remove('user');
+            authService.removeAuth('user');
             $state.go('login');
         }
         function getInstrument() {
-            return traderService.getInstruments().then(function(data) {
-                vm.instrument = data;
-                return vm.instrument;
-            });
+                vm.instrument = crudService.getInstruments();
         }
         function createTrade(n) {
             var side = ['Sell', 'Buy'];
@@ -100,7 +84,7 @@
                 postData.side = side[Math.floor(Math.random() * 2)];
                 postData.quantity = Math.floor((Math.random() * 10000) + 1);
                 postData.limitPrice = Math.floor((Math.random() * 10000) + 1);
-                traderService.setOrder(postData);
+                crudService.setOrder(postData);
             }
         }
         function tradeModel(size) {

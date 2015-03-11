@@ -14,17 +14,17 @@
             <th class="hidden-xs hidden-sm">Trader</th>
         </tr>
         <tr data-ng-repeat="order in vm.order">
-            <td class="text-right" data-ng-bind="order.id"></td>
-            <td class="text-center hidden-xs" data-ng-bind="order.creationTime | timeFilter"></td>
-            <td class="text-center" data-ng-bind="order.side" data-ng-class="order.side=='Buy' ? 'text-danger' : 'text-success'"></td>
-            <td class="text-center" data-ng-bind="order.symbol"></td>
-            <td class="text-right" data-ng-bind="order.quantity"></td>
+            <td class="text-right" data-ng-bind="::order.id"></td>
+            <td class="text-center hidden-xs" data-ng-bind="::order.creationTime | date : 'MM/dd/yyyy hh:mm:ss a'"></td>
+            <td class="text-center" data-ng-bind="::order.side" data-ng-class="order.side=='Buy' ? 'text-danger' : 'text-success'"></td>
+            <td class="text-center" data-ng-bind="::order.symbol"></td>
+            <td class="text-right" data-ng-bind="::order.quantity"></td>
             <td class="text-right hidden-xs" data-ng-bind="order.quantityPlaced"></td>
             <td class="text-right hidden-xs" data-ng-bind="order.quantityExecuted"></td>
-            <td class="text-right" data-ng-bind="'$' + order.limitPrice"></td>
-            <td class="text-right hidden-xs" data-ng-bind="order.priority"></td>
-            <td class="text-center hidden-xs" data-ng-bind="order.status" data-ng-class="order.status=='Executed' ? 'text-success' : 'text-info'"></td>
-            <td class="text-center hidden-xs hidden-sm"><span data-ng-bind="order.traderId" class="label label-info"></span></td>
+            <td class="text-right" data-ng-bind="::'$' + order.limitPrice"></td>
+            <td class="text-right hidden-xs" data-ng-bind="::order.priority"></td>
+            <td class="text-center hidden-xs" data-ng-bind="::order.status" data-ng-class="order.status=='Executed' ? 'text-success' : 'text-info'"></td>
+            <td class="text-center hidden-xs hidden-sm"><span data-ng-bind="::order.traderId" class="label label-info"></span></td>
         </tr>       
     </table>
     <div data-ng-show="!vm.order.length" class="text-center"> No Trade Exist!!!  </div>

@@ -4,53 +4,51 @@ describe('Trader', function () {
 
     var TraderController,
         TraderControllerScope,
-        $q,
+        // $q,
         // $http,
         traderService,
         socketService,
-        cookieService,
+        authService,
         $modal,
         $state,
-        $log,
-        logger;
+        $log;
 
     beforeEach(module('app.trader'));
 
     beforeEach(function () {
-        traderService = {
-            getOrder: jasmine.createSpy(),
-            setOrder: jasmine.createSpy(),
-            deleteOrder: jasmine.createSpy(),
-            getInstruments: jasmine.createSpy()
-        };
+        
         socketService = {};
-        cookieService = {
-            get:jasmine.createSpy()
+        authService = {
+            getAuth:jasmine.createSpy(),
+            removeAuth:jasmine.createSpy()
+        };
+        crudService = {
+            orders : jasmine.createSpy(),
+            setOrder : jasmine.createSpy(),
+            deleteOrder : jasmine.createSpy(),
+            getInstruments : jasmine.createSpy()
+
         };
         module(function ($provide) {
-            $provide.value('traderService', traderService);
+            $provide.value('crudService', crudService);
             $provide.value('socketService', socketService);
-            $provide.value('cookieService', cookieService);
+            $provide.value('authService', authService);
         });
     });
 
     beforeEach(function () {
-        inject(function (_$rootScope_, $controller, _$q_, _traderService_, _socketService_, _cookieService_, _$state_, _$modal_, _$log_, _logger_) {
+        inject(function (_$rootScope_, $controller,  _crudService_, _socketService_, _authService_, _$state_, _$modal_, _$log_) {
             // $http = _$httpBackend_;
-            $q = _$q_;
+            // $q = _$q_;
             TraderControllerScope = _$rootScope_.$new();
-            // _logger_ = {
-            //     info: jasmine.createSpy()
-            // };
             TraderController = $controller('TraderController', {
                 $scope: TraderControllerScope,
-                traderService: _traderService_,
+                crudService: _crudService_,
                 socketService : _socketService_,
-                cookieService : _cookieService_,
+                authService : _authService_,
                 $state: _$state_,   
                 $modal : _$modal_,
-                $log : _$log_,
-                logger: _logger_
+                $log : _$log_
             });
 
             TraderControllerScope.$digest();
@@ -59,12 +57,11 @@ describe('Trader', function () {
 
     it('should be defined', function () {
         expect(TraderControllerScope).toBeDefined();
-        expect(traderService.getOrder).toHaveBeenCalled();
+        expect(crudService.getOrder).toHaveBeenCalled();
     }); 
 
     // it('should do its funcionality', function () {
-        // expect(TraderController.logout).toHaveBeenCalled();
-    //     // expect(logger.info).toHaveBeenCalledWith('Activated Trader View');
+    //     // expect(TraderController.logout).toHaveBeenCalled();
     // });
 
 

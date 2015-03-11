@@ -1,7 +1,8 @@
 /* jshint -W024, -W030, -W098, -W117 */
+/* global io */
 describe('socketService', function() {
     'use strict';
-    var socketService,$rootScope,api;
+    var socketService, $rootScope, api;
 
     beforeEach(module('app.core'));
 
@@ -14,7 +15,7 @@ describe('socketService', function() {
 
     });
     // it('should be defined', function () {
-    //     expect(socketService.socketAction).toBeDefined();
+    //     expect(socketService).toBeDefined();
     // });
 
 

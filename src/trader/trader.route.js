@@ -28,20 +28,14 @@
                 state: 'trader.table',
                 config: {
                     url: '/table',
-                    templateUrl: 'trader/table.html',
-                    controller: 'TraderController',
-                    controllerAs: 'vm',
-                    title: 'Trader'
+                    templateUrl: 'trader/table.html'
                 }
             },
             {
                 state: 'trader.chart',
                 config: {
                     url: '/chart',
-                    templateUrl: 'trader/chart.html',
-                    controller: 'TraderController',
-                    controllerAs: 'vm',
-                    title: 'Trader'
+                    templateUrl: 'trader/chart.html'
                 }
             }
         ];

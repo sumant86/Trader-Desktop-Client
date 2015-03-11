@@ -1,4 +1,3 @@
-/*global alert */
 (function() {
     'use strict';
 

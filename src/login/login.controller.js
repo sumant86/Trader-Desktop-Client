@@ -5,10 +5,10 @@
         .module('app.login')
         .controller('LoginController', LoginController);
 
-    LoginController.$inject = ['loginService', 'cookieService', '$state', 'logger'];
+    LoginController.$inject = ['crudService', 'authService', '$state'];
 
     /* @ngInject */
-    function LoginController(loginService, cookieService, $state, logger) {
+    function LoginController(crudService, authService, $state) {
         var vm = this;
 
         vm.users = null;
@@ -16,21 +16,16 @@
         activate();
 
         function activate() {
-            return getUser().then(function() {
-                logger.info('Activated Login View');
-            });
+            getUser();
         }
 
         function getUser() {
-            return loginService.getUser().then(function(data) {
-                vm.users = data;
-                return vm.users;
-            });
+            vm.users = crudService.users();
         }
         
         function userlogin() {
             if (typeof(vm.userSelect) !== 'undefined') {
-                cookieService.set('user', vm.userSelect);
+                authService.setAuth('user', vm.userSelect);
                 $state.go('trader.table');
             }
         }

@@ -106,22 +106,15 @@
             .attr('x', 0)
             .attr('width', 18)
             .attr('height', 18)
-            .attr('y',function(d,i){
-                return i * 20;
-            })
-            .style('fill', function (d) {
-                return d.color;
-            });
+            .attr('y',function(d,i){ return i * 20; })
+            .style('fill', function (d) { return d.color; });
+
         this.legentEnter.append('text')
             .attr('x', 20)
-            .attr('y',function(d,i){
-                return i * 20 + 9;
-            })
+            .attr('y',function(d,i){ return i * 20 + 9; })
             .attr('dy', '.35em')
             .style('text-anchor', 'start')
-            .text(function (d) {
-                return d.title;
-            });
+            .text(function (d) { return d.title; });
     }
 
     BarChart.prototype.width = function(newWidth) {
@@ -259,7 +252,7 @@
             .attr('x', this.x(1))
             .attr('y', function(d) { return (self.y(d.id) + self.y.rangeBand() - 2); });
 
-        //Legends
+        //Legends Responsive
         if(this.plotWidth < 515){
             this.legendbase.attr('transform', 'translate(' + (this.margin.right -this.margin.left) + ',5)');
             this.legendbase.selectAll('g.legend rect')   
@@ -275,17 +268,14 @@
                 .style('text-anchor', 'end');
         }
         else{
-            this.legendbase.attr('transform', 'translate(' + (this.margin.right -this.margin.left) + ','+ this.margin.top+')');
+            this.legendbase.attr('transform', 
+                'translate(' + (this.margin.right -this.margin.left) + ','+ this.margin.top+')');
             this.legendbase.selectAll('g.legend rect')   
                 .attr('x', this.x(1))
-                .attr('y',function(d,i){
-                    return i * 20;
-                });
+                .attr('y',function(d,i){ return i * 20; });
             this.legendbase.selectAll('g.legend text')   
                 .attr('x', this.x(1) + 20)
-                .attr('y',function(d,i){
-                    return i * 20 + 9;
-                })
+                .attr('y',function(d,i){ return i * 20 + 9; })
                 .style('text-anchor', 'start');
         }
 

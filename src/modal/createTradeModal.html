@@ -6,7 +6,11 @@
 	<div class="modal-body">
 	    Enter Number of Trades
 	    <input type="text" name="tradeCount" data-ng-model="vm.tradeCount" data-ng-pattern="/^[0-9]{1,7}$/" required>
-	    <span  data-ng-show="tradeModal.tradeCount.$error.pattern">Not valid number!</span>
+	    <div data-ng-show="tradeModal.tradeCount.$error.pattern" class="alert alert-danger" role="alert">
+			<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			<span class="sr-only">Error:</span>
+			Enter a valid Number
+		</div>
 	</div>
 	<div class="modal-footer">
 	    <button class="btn btn-primary">Create</button>
